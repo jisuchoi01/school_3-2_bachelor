@@ -31,6 +31,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_UP_SAMPLING, &CImageProcessingView::OnUpSampling)
 	ON_COMMAND(ID_SUM_CONSTANT, &CImageProcessingView::OnSumConstant)
 	ON_COMMAND(ID_AND_OPERATE, &CImageProcessingView::OnAndOperate)
+	ON_COMMAND(ID_SUB_CONSTANT, &CImageProcessingView::OnSubConstant)
+	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingView::OnDivAndMult)
+	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingView::OnLogicalOperation)
 END_MESSAGE_MAP()
 
 // CImageProcessingView »ý¼º/¼Ò¸ê
@@ -163,7 +166,7 @@ void CImageProcessingView::OnQuantization()
 
 }
 
-
+// È­¼Ò°ª »ó¼ö µ¡¼À
 void CImageProcessingView::OnSumConstant()
 {
 	// µµÅ¥¸ÕÆ® Å¬·¡½º ÂüÁ¶
@@ -178,7 +181,29 @@ void CImageProcessingView::OnSumConstant()
 	Invalidate(TRUE);
 }
 
+// È­¼Ò°ª »ó¼ö »¬¼À
+void CImageProcessingView::OnSubConstant()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
 
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnSubConstant();
+	Invalidate(TRUE);
+}
+
+// ³ª´°¼À °ö¼À
+void CImageProcessingView::OnDivAndMult()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnDivAndMult();
+	Invalidate(TRUE);
+}
+
+// & ¿¬»ê
 void CImageProcessingView::OnAndOperate()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -186,5 +211,17 @@ void CImageProcessingView::OnAndOperate()
 	ASSERT_VALID(pDoc);
 
 	pDoc->OnAndOperate();
+	Invalidate(TRUE);
+}
+
+
+
+void CImageProcessingView::OnLogicalOperation()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnLogicalOperation();
 	Invalidate(TRUE);
 }

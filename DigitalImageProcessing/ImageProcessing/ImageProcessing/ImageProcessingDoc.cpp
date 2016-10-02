@@ -1,21 +1,24 @@
-
-// ImageProcessingDoc.cpp : CImageProcessingDoc Å¬·¡½ºÀÇ ±¸Çö
+ï»¿
+// ImageProcessingDoc.cpp : CImageProcessingDoc í´ë˜ìŠ¤ì˜ êµ¬í˜„
 //
 
 #include "stdafx.h"
-// SHARED_HANDLERS´Â ¹Ì¸® º¸±â, Ãà¼ÒÆÇ ±×¸² ¹× °Ë»ö ÇÊÅÍ Ã³¸®±â¸¦ ±¸ÇöÇÏ´Â ATL ÇÁ·ÎÁ§Æ®¿¡¼­ Á¤ÀÇÇÒ ¼ö ÀÖÀ¸¸ç
-// ÇØ´ç ÇÁ·ÎÁ§Æ®¿Í ¹®¼­ ÄÚµå¸¦ °øÀ¯ÇÏµµ·Ï ÇØ Áİ´Ï´Ù.
+// SHARED_HANDLERSëŠ” ë¯¸ë¦¬ ë³´ê¸°, ì¶•ì†ŒíŒ ê·¸ë¦¼ ë° ê²€ìƒ‰ í•„í„° ì²˜ë¦¬ê¸°ë¥¼ êµ¬í˜„í•˜ëŠ” ATL í”„ë¡œì íŠ¸ì—ì„œ ì •ì˜í•  ìˆ˜ ìˆìœ¼ë©°
+// í•´ë‹¹ í”„ë¡œì íŠ¸ì™€ ë¬¸ì„œ ì½”ë“œë¥¼ ê³µìœ í•˜ë„ë¡ í•´ ì¤ë‹ˆë‹¤.
 #ifndef SHARED_HANDLERS
 #include "ImageProcessing.h"
 #endif
 
 #include "ImageProcessingDoc.h"
 
-/* ´ÙÀÌ¾ó·Î±× */
+/* ë‹¤ì´ì–¼ë¡œê·¸ */
 #include "DownSampleDlg.h"
 #include "UpSampleDlg.h"
 #include "QuantizationDlg.h"
 #include "ConstantDlg.h"
+#include "SubtractDlg.h"
+#include "DivAndMultDlg.h"
+#include "LogicalOperationDlg.h"
 
 #include <propkey.h>
 
@@ -32,10 +35,13 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_QUANTIZATION, &CImageProcessingDoc::OnQuantization)
 	ON_COMMAND(ID_SUM_CONSTANT, &CImageProcessingDoc::OnSumConstant)
 	ON_COMMAND(ID_AND_OPERATE, &CImageProcessingDoc::OnAndOperate)
+	ON_COMMAND(ID_SUB_CONSTANT, &CImageProcessingDoc::OnSubConstant)
+	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingDoc::OnDivAndMult)
+	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingDoc::OnLogicalOperation)
 END_MESSAGE_MAP()
 
 
-// CImageProcessingDoc »ı¼º/¼Ò¸ê
+// CImageProcessingDoc ìƒì„±/ì†Œë©¸
 
 CImageProcessingDoc::CImageProcessingDoc()
 	: m_InputImage(NULL)
@@ -47,7 +53,7 @@ CImageProcessingDoc::CImageProcessingDoc()
 	, m_Re_height(0)
 	, m_Re_size(0)
 {
-	// TODO: ¿©±â¿¡ ÀÏÈ¸¼º »ı¼º ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì¼íšŒì„± ìƒì„± ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 
 }
 
@@ -60,8 +66,8 @@ BOOL CImageProcessingDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
-	// TODO: ¿©±â¿¡ ÀçÃÊ±âÈ­ ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
-	// SDI ¹®¼­´Â ÀÌ ¹®¼­¸¦ ´Ù½Ã »ç¿ëÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ì¬ì´ˆê¸°í™” ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
+	// SDI ë¬¸ì„œëŠ” ì´ ë¬¸ì„œë¥¼ ë‹¤ì‹œ ì‚¬ìš©í•©ë‹ˆë‹¤.
 
 	return TRUE;
 }
@@ -75,20 +81,20 @@ void CImageProcessingDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
 	{
-		// TODO: ¿©±â¿¡ ÀúÀå ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+		// TODO: ì—¬ê¸°ì— ì €ì¥ ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	}
 	else
 	{
-		// TODO: ¿©±â¿¡ ·Îµù ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+		// TODO: ì—¬ê¸°ì— ë¡œë”© ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	}
 }
 
 #ifdef SHARED_HANDLERS
 
-// Ãà¼ÒÆÇ ±×¸²À» Áö¿øÇÕ´Ï´Ù.
+// ì¶•ì†ŒíŒ ê·¸ë¦¼ì„ ì§€ì›í•©ë‹ˆë‹¤.
 void CImageProcessingDoc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
 {
-	// ¹®¼­ÀÇ µ¥ÀÌÅÍ¸¦ ±×¸®·Á¸é ÀÌ ÄÚµå¸¦ ¼öÁ¤ÇÏ½Ê½Ã¿À.
+	// ë¬¸ì„œì˜ ë°ì´í„°ë¥¼ ê·¸ë¦¬ë ¤ë©´ ì´ ì½”ë“œë¥¼ ìˆ˜ì •í•˜ì‹­ì‹œì˜¤.
 	dc.FillSolidRect(lprcBounds, RGB(255, 255, 255));
 
 	CString strText = _T("TODO: implement thumbnail drawing here");
@@ -106,14 +112,14 @@ void CImageProcessingDoc::OnDrawThumbnail(CDC& dc, LPRECT lprcBounds)
 	dc.SelectObject(pOldFont);
 }
 
-// °Ë»ö Ã³¸®±â¸¦ Áö¿øÇÕ´Ï´Ù.
+// ê²€ìƒ‰ ì²˜ë¦¬ê¸°ë¥¼ ì§€ì›í•©ë‹ˆë‹¤.
 void CImageProcessingDoc::InitializeSearchContent()
 {
 	CString strSearchContent;
-	// ¹®¼­ÀÇ µ¥ÀÌÅÍ¿¡¼­ °Ë»ö ÄÜÅÙÃ÷¸¦ ¼³Á¤ÇÕ´Ï´Ù.
-	// ÄÜÅÙÃ÷ ºÎºĞÀº ";"·Î ±¸ºĞµÇ¾î¾ß ÇÕ´Ï´Ù.
+	// ë¬¸ì„œì˜ ë°ì´í„°ì—ì„œ ê²€ìƒ‰ ì½˜í…ì¸ ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
+	// ì½˜í…ì¸  ë¶€ë¶„ì€ ";"ë¡œ êµ¬ë¶„ë˜ì–´ì•¼ í•©ë‹ˆë‹¤.
 
-	// ¿¹: strSearchContent = _T("point;rectangle;circle;ole object;");
+	// ì˜ˆ: strSearchContent = _T("point;rectangle;circle;ole object;");
 	SetSearchContent(strSearchContent);
 }
 
@@ -137,7 +143,7 @@ void CImageProcessingDoc::SetSearchContent(const CString& value)
 
 #endif // SHARED_HANDLERS
 
-// CImageProcessingDoc Áø´Ü
+// CImageProcessingDoc ì§„ë‹¨
 
 #ifdef _DEBUG
 void CImageProcessingDoc::AssertValid() const
@@ -152,7 +158,7 @@ void CImageProcessingDoc::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CImageProcessingDoc ¸í·É
+// CImageProcessingDoc ëª…ë ¹
 
 
 BOOL CImageProcessingDoc::OnOpenDocument(LPCTSTR lpszPathName)
@@ -160,38 +166,38 @@ BOOL CImageProcessingDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	if (!CDocument::OnOpenDocument(lpszPathName))
 		return FALSE;
 
-	CFile File; // ÆÄÀÏ °´Ã¼ ¼±¾ğ
+	CFile File; // íŒŒì¼ ê°ì²´ ì„ ì–¸
 
 	File.Open(lpszPathName, CFile::modeRead | CFile::typeBinary);
-	// ÆÄÀÏ ¿­±â ´ëÈ­»óÀÚ¿¡¼­ ¼±ÅÃÇÑ ÆÄÀÏÀ» ÁöÁ¤ÇÏ°í ÀĞ±â ¸ğµå ¼±ÅÃ
+	// íŒŒì¼ ì—´ê¸° ëŒ€í™”ìƒìì—ì„œ ì„ íƒí•œ íŒŒì¼ì„ ì§€ì •í•˜ê³  ì½ê¸° ëª¨ë“œ ì„ íƒ
 
-	// ÀÌ Ã¥¿¡¼­´Â ¿µ»óÀÇ Å©±â 256*256, 512*512, 640*480¸¸À» »ç¿ëÇÑ´Ù.
-	if (File.GetLength() == 256 * 256) { // RAW ÆÄÀÏÀÇ Å©±â °áÁ¤
+	// ì´ ì±…ì—ì„œëŠ” ì˜ìƒì˜ í¬ê¸° 256*256, 512*512, 640*480ë§Œì„ ì‚¬ìš©í•œë‹¤.
+	if (File.GetLength() == 256 * 256) { // RAW íŒŒì¼ì˜ í¬ê¸° ê²°ì •
 
 		m_height = 256;
 		m_width = 256;
 	}
-	else if (File.GetLength() == 512 * 512) { // RAW ÆÄÀÏÀÇ Å©±â °áÁ¤
+	else if (File.GetLength() == 512 * 512) { // RAW íŒŒì¼ì˜ í¬ê¸° ê²°ì •
 		m_height = 512;
 		m_width = 512;
 	}
-	else if (File.GetLength() == 640 * 480) { // RAW ÆÄÀÏÀÇ Å©±â °áÁ¤
+	else if (File.GetLength() == 640 * 480) { // RAW íŒŒì¼ì˜ í¬ê¸° ê²°ì •
 		m_height = 480;
 		m_width = 640;
 	}
 	else {
-		AfxMessageBox(_T("Not Support Image Size")); // ÇØ´ç Å©±â°¡ ¾ø´Â °æ¿ì
+		AfxMessageBox(_T("Not Support Image Size")); // í•´ë‹¹ í¬ê¸°ê°€ ì—†ëŠ” ê²½ìš°
 		return 0;
 	}
-	m_size = m_width * m_height; // ¿µ»óÀÇ Å©±â °è»ê
+	m_size = m_width * m_height; // ì˜ìƒì˜ í¬ê¸° ê³„ì‚°
 
 	m_InputImage = new unsigned char[m_size];
-	// ÀÔ·Â ¿µ»óÀÇ Å©±â¿¡ ¸Â´Â ¸Ş¸ğ¸® ÇÒ´ç
+	// ì…ë ¥ ì˜ìƒì˜ í¬ê¸°ì— ë§ëŠ” ë©”ëª¨ë¦¬ í• ë‹¹
 
 	for (int i = 0; i < m_size; i++)
-		m_InputImage[i] = 255; // ÃÊ±âÈ­
-	File.Read(m_InputImage, m_size); // ÀÔ·Â ¿µ»ó ÆÄÀÏ ÀĞ±â
-	File.Close(); // ÆÄÀÏ ´İ±â
+		m_InputImage[i] = 255; // ì´ˆê¸°í™”
+	File.Read(m_InputImage, m_size); // ì…ë ¥ ì˜ìƒ íŒŒì¼ ì½ê¸°
+	File.Close(); // íŒŒì¼ ë‹«ê¸°
 
 	return TRUE;
 }
@@ -199,17 +205,17 @@ BOOL CImageProcessingDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
 BOOL CImageProcessingDoc::OnSaveDocument(LPCTSTR lpszPathName)
 {
-	CFile File; // ÆÄÀÏ °´Ã¼ ¼±¾ğ
+	CFile File; // íŒŒì¼ ê°ì²´ ì„ ì–¸
 	CFileDialog SaveDlg(FALSE, (LPCTSTR)"raw", NULL, OFN_HIDEREADONLY);
-	// raw ÆÄÀÏÀ» ´Ù¸¥ ÀÌ¸§À¸·Î ÀúÀåÇÏ±â¸¦ À§ÇÑ ´ëÈ­»óÀÚ °´Ã¼ ¼±¾ğ
+	// raw íŒŒì¼ì„ ë‹¤ë¥¸ ì´ë¦„ìœ¼ë¡œ ì €ì¥í•˜ê¸°ë¥¼ ìœ„í•œ ëŒ€í™”ìƒì ê°ì²´ ì„ ì–¸
 
 	if (SaveDlg.DoModal() == IDOK) {
-		// DoModal ¸â¹ö ÇÔ¼ö¿¡¼­ ÀúÀåÇÏ±â ¼öÇà
+		// DoModal ë©¤ë²„ í•¨ìˆ˜ì—ì„œ ì €ì¥í•˜ê¸° ìˆ˜í–‰
 		File.Open(SaveDlg.GetPathName(), CFile::modeCreate |
 			CFile::modeWrite);
-		// ÆÄÀÏ ¿­±â
-		File.Write(m_InputImage, m_size); // ÆÄÀÏ ¾²±â
-		File.Close(); // ÆÄÀÏ ´İ±â
+		// íŒŒì¼ ì—´ê¸°
+		File.Write(m_InputImage, m_size); // íŒŒì¼ ì“°ê¸°
+		File.Close(); // íŒŒì¼ ë‹«ê¸°
 	}
 
 	return TRUE;
@@ -221,23 +227,23 @@ void CImageProcessingDoc::OnDownSampling(void)
 {
 	int i, j;
 	CDownSampleDlg dlg;
-	if (dlg.DoModal() == IDOK) // ´ëÈ­»óÀÚÀÇ È°¼ºÈ­ ¿©ºÎ
+	if (dlg.DoModal() == IDOK) // ëŒ€í™”ìƒìì˜ í™œì„±í™” ì—¬ë¶€
 	{
 		m_Re_height = m_height / dlg.m_DownSampleRate;
-		// Ãà¼Ò ¿µ»óÀÇ ¼¼·Î ±æÀÌ¸¦ °è»ê
+		// ì¶•ì†Œ ì˜ìƒì˜ ì„¸ë¡œ ê¸¸ì´ë¥¼ ê³„ì‚°
 		m_Re_width = m_width / dlg.m_DownSampleRate;
-		// Ãà¼Ò ¿µ»óÀÇ °¡·Î ±æÀÌ¸¦ °è»ê
+		// ì¶•ì†Œ ì˜ìƒì˜ ê°€ë¡œ ê¸¸ì´ë¥¼ ê³„ì‚°
 		m_Re_size = m_Re_height * m_Re_width;
-		// Ãà¼Ò ¿µ»óÀÇ Å©±â¸¦ °è»ê
+		// ì¶•ì†Œ ì˜ìƒì˜ í¬ê¸°ë¥¼ ê³„ì‚°
 
 		m_OutputImage = new unsigned char[m_Re_size];
-		// Ãà¼Ò ¿µ»óÀ» À§ÇÑ ¸Ş¸ğ¸® ÇÒ´ç
+		// ì¶•ì†Œ ì˜ìƒì„ ìœ„í•œ ë©”ëª¨ë¦¬ í• ë‹¹
 
 		for (i = 0; i < m_Re_height; i++) {
 			for (j = 0; j < m_Re_width; j++) {
 				m_OutputImage[i*m_Re_width + j]
 					= m_InputImage[(i*dlg.m_DownSampleRate*m_width) + dlg.m_DownSampleRate*j];
-				// Ãà¼Ò ¿µ»óÀ» »ı¼º
+				// ì¶•ì†Œ ì˜ìƒì„ ìƒì„±
 			}
 		}
 	}
@@ -246,35 +252,33 @@ void CImageProcessingDoc::OnDownSampling(void)
 
 void CImageProcessingDoc::OnUpSampling()
 {
-	// TODO: ¿©±â¿¡ ¸í·É Ã³¸®±â ÄÚµå¸¦ Ãß°¡ÇÕ´Ï´Ù.
+	// TODO: ì—¬ê¸°ì— ëª…ë ¹ ì²˜ë¦¬ê¸° ì½”ë“œë¥¼ ì¶”ê°€í•©ë‹ˆë‹¤.
 	int i, j;
 
 	CUpSampleDlg dlg;
-	if (dlg.DoModal() == IDOK) { // DoModal ´ëÈ­»óÀÚÀÇ È°¼ºÈ­ ¿©ºÎ
+	if (dlg.DoModal() == IDOK) { // DoModal ëŒ€í™”ìƒìì˜ í™œì„±í™” ì—¬ë¶€
 		m_Re_height = m_height * dlg.m_UpSampleRate;
-		// È®´ë ¿µ»óÀÇ ¼¼·Î ±æÀÌ °è»ê
+		// í™•ëŒ€ ì˜ìƒì˜ ì„¸ë¡œ ê¸¸ì´ ê³„ì‚°
 		m_Re_width = m_width * dlg.m_UpSampleRate;
-		// È®´ë ¿µ»óÀÇ °¡·Î ±æÀÌ °è»ê
+		// í™•ëŒ€ ì˜ìƒì˜ ê°€ë¡œ ê¸¸ì´ ê³„ì‚°
 		m_Re_size = m_Re_height * m_Re_width;
-		// È®´ë ¿µ»óÀÇ Å©±â °è»ê
+		// í™•ëŒ€ ì˜ìƒì˜ í¬ê¸° ê³„ì‚°
 		m_OutputImage = new unsigned char[m_Re_size];
-		// È®´ë ¿µ»óÀ» À§ÇÑ ¸Ş¸ğ¸® ÇÒ´ç
+		// í™•ëŒ€ ì˜ìƒì„ ìœ„í•œ ë©”ëª¨ë¦¬ í• ë‹¹
 
 		for (i = 0; i < m_Re_size; i++)
-			m_OutputImage[i] = 0; // ÃÊ±âÈ­
+			m_OutputImage[i] = 0; // ì´ˆê¸°í™”
 
 		for (i = 0; i < m_height; i++) {
 			for (j = 0; j < m_width; j++) {
 				m_OutputImage[i*dlg.m_UpSampleRate*m_Re_width +
 					dlg.m_UpSampleRate*j] = m_InputImage[i*m_width + j];
-			} // Àç¹èÄ¡ÇÏ¿© ¿µ»ó È®´ë
+			} // ì¬ë°°ì¹˜í•˜ì—¬ ì˜ìƒ í™•ëŒ€
 		}
 	}
 }
 
-
-
-/* ¾çÀÚÈ­ */
+/* ì–‘ìí™” */
 void CImageProcessingDoc::OnQuantization()
 {
 	CQuantizationDlg dlg;
@@ -288,7 +292,7 @@ void CImageProcessingDoc::OnQuantization()
 		int i, sb;
 		sb = 8 - dlg.m_QuantBit;
 
-		// ºñÆ® ¹ö¸®°í ´Ù½Ã ¶¯±è
+		// ë¹„íŠ¸ ë²„ë¦¬ê³  ë‹¤ì‹œ ë•¡ê¹€
 		for (i = 0; i < m_size; i++)
 		{
 			m_OutputImage[i] = m_InputImage[i] >> sb << sb;
@@ -296,10 +300,10 @@ void CImageProcessingDoc::OnQuantization()
 	}
 }
 
-
+/* ìƒìˆ˜ ë§ì…ˆ */
 void CImageProcessingDoc::OnSumConstant()
 {
-	CConstantDlg dlg; // »ó¼ö °ªÀ» ÀÔ·Â¹Ş´Â ´ëÈ­»óÀÚ
+	CConstantDlg dlg; // ìƒìˆ˜ ê°’ì„ ì…ë ¥ë°›ëŠ” ëŒ€í™”ìƒì
 
 	int i;
 
@@ -313,18 +317,94 @@ void CImageProcessingDoc::OnSumConstant()
 	{
 		for (i = 0; i < m_size; i++) 
 		{
-			// Ãâ·Â °ªÀÌ 255º¸´Ù Å©¸é 255 Ãâ·Â
+			// ì¶œë ¥ ê°’ì´ 255ë³´ë‹¤ í¬ë©´ 255 ì¶œë ¥
 			if (m_InputImage[i] + dlg.m_Constant >= 255)
 				m_OutputImage[i] = 255;
 
-			// »ó¼ö °ª°ú È­¼Ò °ª°úÀÇ µ¡¼À
+			// ìƒìˆ˜ ê°’ê³¼ í™”ì†Œ ê°’ê³¼ì˜ ë§ì…ˆ
 			else
 				m_OutputImage[i] = (unsigned char)(m_InputImage[i] + dlg.m_Constant);
 		}
 	}
 }
 
-/* && ¿¬»ê */
+// í™”ì†Œê°’ ëº„ì…ˆ
+void CImageProcessingDoc::OnSubConstant()
+{
+	CSubtractDlg dlg; // ìƒìˆ˜ ê°’ì„ ì…ë ¥ë°›ëŠ” ëŒ€í™”ìƒì
+
+	int i;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	// í™•ì¸ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ
+	if (dlg.DoModal() == IDOK)
+	{
+		for (i = 0; i < m_size; i++)
+		{
+			// ì¶œë ¥ ê°’ì´ 255ë³´ë‹¤ í¬ë©´ 255 ì¶œë ¥
+			if (m_InputImage[i] - dlg.i_Constant < 0)
+				m_OutputImage[i] = 0;
+
+			// ìƒìˆ˜ ê°’ê³¼ í™”ì†Œ ê°’ê³¼ì˜ ëº„ì…ˆ
+			else
+				m_OutputImage[i] = (unsigned char)(m_InputImage[i] - dlg.i_Constant);
+		}
+	}
+}
+
+
+// ë‚˜ëˆ—ì…ˆ ê³±ì…ˆ
+void CImageProcessingDoc::OnDivAndMult()
+{
+	CDivAndMultDlg dlg;
+	int i;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	if (dlg.DoModal() == IDOK)
+	{
+		switch (dlg.opt)
+		{
+		case OPT_DIV:
+			for (i = 0; i < m_size; i++)
+			{
+				// ìƒìˆ˜ ê°’ê³¼ í™”ì†Œ ê°’ ë‚˜ëˆ—ì…ˆ
+				if (m_InputImage[i] / dlg.i_Constant < 0)
+					m_OutputImage[i] = 0;
+
+				else
+					m_OutputImage[i]
+					= (unsigned char)(m_InputImage[i] / dlg.i_Constant);
+			}
+			break;
+		case OPT_MULT:
+			for (i = 0; i < m_size; i++)
+			{
+				// ìƒìˆ˜ ê°’ê³¼ í™”ì†Œ ê°’ ê³±ì…ˆ
+				if (m_InputImage[i] * dlg.i_Constant >255)
+					m_OutputImage[i] = 255;
+
+				else
+					m_OutputImage[i]
+					= (unsigned char)(m_InputImage[i] * dlg.i_Constant);
+			}
+			break;
+		default:
+			break;
+		} // switch end
+	} // if end
+}
+
+// & ì—°ì‚° 
 void CImageProcessingDoc::OnAndOperate()
 {
 	CConstantDlg dlg;
@@ -340,5 +420,44 @@ void CImageProcessingDoc::OnAndOperate()
 	{
 		for (i = 0; i<m_size; i++) 
 			m_OutputImage[i] = (m_InputImage[i] & (unsigned char)dlg.m_Constant);
+	}
+}
+
+// XOR, OR, NOR
+void CImageProcessingDoc::OnLogicalOperation()
+{
+	CLogicalOperationDlg dlg;
+	int i;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	if (dlg.DoModal() == IDOK)
+	{
+		switch (dlg.opt)
+		{
+		case OR:
+			for (i = 0; i<m_size; i++)
+				m_OutputImage[i] = (m_InputImage[i] | 
+				(unsigned char)dlg.i_Constant);
+			break;
+
+		case XOR:
+			for (i = 0; i<m_size; i++)
+				m_OutputImage[i] = (m_InputImage[i] ^ 
+				(unsigned char)dlg.i_Constant);
+			break;
+
+		case NOR:
+			for (i = 0; i < m_size; i++)
+				m_OutputImage[i] = !m_InputImage[i];
+			break;
+
+		default:
+			break;
+		}
 	}
 }

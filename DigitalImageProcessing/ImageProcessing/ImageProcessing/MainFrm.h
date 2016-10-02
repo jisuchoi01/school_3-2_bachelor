@@ -24,6 +24,7 @@ public:
 public:
 	virtual ~CMainFrame();
 #ifdef _DEBUG
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif

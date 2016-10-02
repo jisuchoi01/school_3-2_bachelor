@@ -12,7 +12,7 @@ public:
 	virtual ~CQuantizationDlg();
 
 // 대화 상자 데이터입니다.
-	enum { IDD = IDD_DIALOG3 };
+	enum { IDD = IDD_DIALOG4 };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
