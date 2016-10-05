@@ -186,6 +186,10 @@ BEGIN
         MENUITEM "&& 연산",                       ID_AND_OPERATE
         MENUITEM "XOR, OR, NOR",                ID_LOGICAL_OPERATION
     END
+    POPUP "과제"
+    BEGIN
+        MENUITEM "과제1",                         ID_HOMEWORK1
+    END
 END
 
 

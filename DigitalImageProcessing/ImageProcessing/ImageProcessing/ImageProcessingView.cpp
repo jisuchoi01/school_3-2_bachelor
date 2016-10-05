@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_SUB_CONSTANT, &CImageProcessingView::OnSubConstant)
 	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingView::OnDivAndMult)
 	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingView::OnLogicalOperation)
+	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingView::OnHomework1)
 END_MESSAGE_MAP()
 
 // CImageProcessingView »ý¼º/¼Ò¸ê
@@ -223,5 +224,16 @@ void CImageProcessingView::OnLogicalOperation()
 	ASSERT_VALID(pDoc);
 
 	pDoc->OnLogicalOperation();
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnHomework1()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnHomework1();
 	Invalidate(TRUE);
 }

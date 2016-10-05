@@ -49,6 +49,7 @@ public:
 	afx_msg void OnSubConstant();
 	afx_msg void OnDivAndMult();
 	afx_msg void OnLogicalOperation();
+	afx_msg void OnHomework1();
 };
 
 #ifndef _DEBUG  // ImageProcessingView.cpp의 디버그 버전

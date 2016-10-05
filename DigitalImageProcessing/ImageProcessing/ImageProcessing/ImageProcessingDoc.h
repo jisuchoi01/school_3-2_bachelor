@@ -67,4 +67,5 @@ public:
 	afx_msg void OnSubConstant();
 	afx_msg void OnDivAndMult();
 	afx_msg void OnLogicalOperation();
+	afx_msg void OnHomework1();
 };

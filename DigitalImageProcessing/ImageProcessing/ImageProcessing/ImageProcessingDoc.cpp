@@ -20,6 +20,10 @@
 #include "DivAndMultDlg.h"
 #include "LogicalOperationDlg.h"
 
+/* 그 외 유틸 */
+#include <string>
+using namespace std; // 표준이므로 std 안에 string 이 정의되어 있습니다. 
+
 #include <propkey.h>
 
 #ifdef _DEBUG
@@ -38,6 +42,7 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_SUB_CONSTANT, &CImageProcessingDoc::OnSubConstant)
 	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingDoc::OnDivAndMult)
 	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingDoc::OnLogicalOperation)
+	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingDoc::OnHomework1)
 END_MESSAGE_MAP()
 
 
@@ -313,9 +318,9 @@ void CImageProcessingDoc::OnSumConstant()
 
 	m_OutputImage = new unsigned char[m_Re_size];
 
-	if (dlg.DoModal() == IDOK) 
+	if (dlg.DoModal() == IDOK)
 	{
-		for (i = 0; i < m_size; i++) 
+		for (i = 0; i < m_size; i++)
 		{
 			// 출력 값이 255보다 크면 255 출력
 			if (m_InputImage[i] + dlg.m_Constant >= 255)
@@ -390,7 +395,7 @@ void CImageProcessingDoc::OnDivAndMult()
 			for (i = 0; i < m_size; i++)
 			{
 				// 상수 값과 화소 값 곱셈
-				if (m_InputImage[i] * dlg.i_Constant >255)
+				if (m_InputImage[i] * dlg.i_Constant > 255)
 					m_OutputImage[i] = 255;
 
 				else
@@ -416,9 +421,9 @@ void CImageProcessingDoc::OnAndOperate()
 
 	m_OutputImage = new unsigned char[m_Re_size];
 
-	if (dlg.DoModal() == IDOK) 
+	if (dlg.DoModal() == IDOK)
 	{
-		for (i = 0; i<m_size; i++) 
+		for (i = 0; i < m_size; i++)
 			m_OutputImage[i] = (m_InputImage[i] & (unsigned char)dlg.m_Constant);
 	}
 }
@@ -440,14 +445,14 @@ void CImageProcessingDoc::OnLogicalOperation()
 		switch (dlg.opt)
 		{
 		case OR:
-			for (i = 0; i<m_size; i++)
-				m_OutputImage[i] = (m_InputImage[i] | 
+			for (i = 0; i < m_size; i++)
+				m_OutputImage[i] = (m_InputImage[i] |
 				(unsigned char)dlg.i_Constant);
 			break;
 
 		case XOR:
-			for (i = 0; i<m_size; i++)
-				m_OutputImage[i] = (m_InputImage[i] ^ 
+			for (i = 0; i < m_size; i++)
+				m_OutputImage[i] = (m_InputImage[i] ^
 				(unsigned char)dlg.i_Constant);
 			break;
 
@@ -460,4 +465,90 @@ void CImageProcessingDoc::OnLogicalOperation()
 			break;
 		}
 	}
+}
+
+// 과제 1 : 입력영상 평균 128, 표준편차 30으로 변환시키기
+
+// 평균 구하는 함수
+double GetAverage(unsigned char data[], int size)
+{
+	double Average = 0;
+
+	// 평균 구함
+	for (int i = 0; i < size; i++)
+		Average += data[i];
+	Average /= size;
+
+	return Average;
+}
+
+// 표준 편차 구하는 함수
+double GetDiviation(unsigned char data[], int size, double Average)
+{
+	double StandardDiviation = 0, diff = 0;
+	// 편차 구함
+	for (int i = 0; i < size; i++)
+	{
+		diff = data[i] - Average;
+		diff *= diff;
+		StandardDiviation += diff;
+	}
+	StandardDiviation /= size;
+	StandardDiviation = sqrt(StandardDiviation);
+	return StandardDiviation;
+}
+
+void test()
+{
+	int m_size = 5;
+	unsigned char t[5] = {1, 2, 3, 4, 5 };
+	double Average = 0, StandardDiviation = 0, diff = 0;
+
+	double AfterAverage = 0, AfterStandardDiviation = 0;
+
+	Average = GetAverage(t, 5);
+	StandardDiviation = GetDiviation(t,5,Average);
+	for (int i = 0; i < 5; i++)
+		t[i] *= 2;
+
+	printf("test %lf\n",Average);
+	Average = GetAverage(t, 5);
+	printf("test %lf\n\n", Average);
+
+	StandardDiviation = GetDiviation(t, 5, Average);
+
+}
+
+void CImageProcessingDoc::OnHomework1()
+{
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_size];
+
+	// 변환 전 평균, 편차 변수
+	double Average = 0, StandardDiviation = 0;
+	
+	// 변환 후 평균, 편차 변수
+	double AfterAverage = 0, AfterStandardDiviation = 0;
+
+	// 평균과 편차 구함
+	Average = GetAverage(m_InputImage, m_size);
+	StandardDiviation = GetDiviation(m_InputImage, m_size, Average);
+	
+
+	// 영상 변환
+	for (int i = 0; i < m_size; i++)
+		m_OutputImage[i] = (m_InputImage[i] - Average) * (30 / StandardDiviation) + 128;
+
+	// 변환된 영상의 평균과 편차 구함
+	AfterAverage = GetAverage(m_OutputImage, m_size);
+	AfterStandardDiviation = GetDiviation(m_OutputImage, m_size, AfterAverage);
+	
+	// 디버깅 결과 출력
+	printf("원래 평균 : %lf\n", Average);
+	printf("원래 편차 : %lf\n", StandardDiviation);
+	printf("현재 편차 : %lf\n", AfterStandardDiviation);
+	printf("현재 평균 : %lf\n\n", AfterAverage);
 }

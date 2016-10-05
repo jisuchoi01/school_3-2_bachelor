@@ -1,0 +1,5 @@
+﻿1>------ 빌드 시작: 프로젝트: ImageProcessing, 구성: Debug Win32 ------
+1>  ImageProcessingDoc.cpp
+1>c:\users\cadet\project\school_3-2_bachelor\digitalimageprocessing\imageprocessing\imageprocessing\imageprocessingdoc.cpp(537): warning C4244: '=': 'double'에서 'unsigned char'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+1>LINK : fatal error LNK1201: 'C:\Users\cadet\project\school_3-2_bachelor\DigitalImageProcessing\ImageProcessing\Debug\ImageProcessing.pdb' 프로그램 데이터베이스를 쓰는 동안 오류가 발생했습니다. 디스크 공간이 부족한지, 경로가 잘못되었는지 또는 권한이 없는지 확인하십시오.
+========== 빌드: 성공 0, 실패 1, 최신 0, 생략 0 ==========
