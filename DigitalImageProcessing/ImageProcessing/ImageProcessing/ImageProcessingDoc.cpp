@@ -1,5 +1,4 @@
-﻿
-// ImageProcessingDoc.cpp : CImageProcessingDoc 클래스의 구현
+﻿// ImageProcessingDoc.cpp : CImageProcessingDoc 클래스의 구현
 //
 
 #include "stdafx.h"
@@ -19,6 +18,7 @@
 #include "SubtractDlg.h"
 #include "DivAndMultDlg.h"
 #include "LogicalOperationDlg.h"
+#include "StressTransformDlg.h"
 
 /* 그 외 유틸 */
 #include <string>
@@ -45,6 +45,8 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingDoc::OnHomework1)
 	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingDoc::OnGammaCorrection)
 	ON_COMMAND(ID_BINARIZATION, &CImageProcessingDoc::OnBinarization)
+	ON_COMMAND(ID_NEGA_TRANSFORM, &CImageProcessingDoc::OnNegaTransform)
+	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingDoc::OnStressTransform)
 END_MESSAGE_MAP()
 
 
@@ -500,27 +502,6 @@ double GetDiviation(unsigned char data[], int size, double Average)
 	return StandardDiviation;
 }
 
-void test()
-{
-	int m_size = 5;
-	unsigned char t[5] = {1, 2, 3, 4, 5 };
-	double Average = 0, StandardDiviation = 0, diff = 0;
-
-	double AfterAverage = 0, AfterStandardDiviation = 0;
-
-	Average = GetAverage(t, 5);
-	StandardDiviation = GetDiviation(t,5,Average);
-	for (int i = 0; i < 5; i++)
-		t[i] *= 2;
-
-	printf("test %lf\n",Average);
-	Average = GetAverage(t, 5);
-	printf("test %lf\n\n", Average);
-
-	StandardDiviation = GetDiviation(t, 5, Average);
-
-}
-
 void CImageProcessingDoc::OnHomework1()
 {
 	m_Re_height = m_height;
@@ -531,14 +512,14 @@ void CImageProcessingDoc::OnHomework1()
 
 	// 변환 전 평균, 편차 변수
 	double Average = 0, StandardDiviation = 0;
-	
+
 	// 변환 후 평균, 편차 변수
 	double AfterAverage = 0, AfterStandardDiviation = 0;
 
 	// 평균과 편차 구함
 	Average = GetAverage(m_InputImage, m_size);
 	StandardDiviation = GetDiviation(m_InputImage, m_size, Average);
-	
+
 
 	// 영상 변환
 	for (int i = 0; i < m_size; i++)
@@ -547,7 +528,7 @@ void CImageProcessingDoc::OnHomework1()
 	// 변환된 영상의 평균과 편차 구함
 	AfterAverage = GetAverage(m_OutputImage, m_size);
 	AfterStandardDiviation = GetDiviation(m_OutputImage, m_size, AfterAverage);
-	
+
 	// 디버깅 결과 출력
 	printf("원래 평균 : %lf\n", Average);
 	printf("원래 편차 : %lf\n", StandardDiviation);
@@ -584,8 +565,65 @@ void CImageProcessingDoc::OnGammaCorrection()
 	}
 }
 
-
+// 이진화
 void CImageProcessingDoc::OnBinarization()
 {
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CConstantDlg dlg;
+
+	int i;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	if (dlg.DoModal() == IDOK)
+	{
+		for (i = 0; i < m_size; i++)
+		{
+			if (m_InputImage[i] >= dlg.m_Constant)
+				m_OutputImage[i] = 255; // 임계 값보다 크면 255 출력
+			else
+				m_OutputImage[i] = 0; // 임계 값보다 작으면 0 출력
+		}
+	}
+}
+
+// 영상 반전
+void CImageProcessingDoc::OnNegaTransform()
+{
+	int i;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	for (i = 0; i < m_size; i++)
+		m_OutputImage[i] = 255 - m_InputImage[i]; // 임계 값보다 작으면 0 출력
+}
+
+// 부분 강조
+void CImageProcessingDoc::OnStressTransform()
+{
+	CStressTransformDlg dlg;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	if (dlg.DoModal() == IDOK) 
+	{
+		for (int i = 0; i < m_size; i++)
+		{
+			if (m_InputImage[i] >= dlg.m_iStart && m_InputImage[i] <= dlg.m_iEnd)
+				m_OutputImage[i] = 255;
+			else
+				m_OutputImage[i] = m_InputImage[i];
+		}
+	}
 }

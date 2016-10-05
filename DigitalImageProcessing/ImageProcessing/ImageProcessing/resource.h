@@ -14,6 +14,7 @@
 #define IDD_SUB                         317
 #define IDD_DIV_MULT                    320
 #define IDD_LOGICAL_OPERATION           321
+#define IDD_STRESS_TRANSFORM            324
 #define IDC_EDIT1                       1000
 #define IDC_LIST1                       1001
 #define IDC_DIV                         1002
@@ -21,6 +22,7 @@
 #define IDC_NOR                         1004
 #define IDC_OR                          1005
 #define IDC_XOR                         1006
+#define IDC_EDIT2                       1009
 #define ID_32771                        32771
 #define ID_DOWN_SAMPLING                32772
 #define ID_32773                        32773
@@ -46,14 +48,19 @@
 #define ID_32795                        32795
 #define ID_BINARIZATION                 32797
 #define I                               32798
+#define ID_32799                        32799
+#define ID_                             32800
+#define ID_NEGA_TRANSFORM               32801
+#define ID_32802                        32802
+#define ID_STRESS_TRANSFORM             32803
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        324
-#define _APS_NEXT_COMMAND_VALUE         32799
-#define _APS_NEXT_CONTROL_VALUE         1009
+#define _APS_NEXT_RESOURCE_VALUE        326
+#define _APS_NEXT_COMMAND_VALUE         32804
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

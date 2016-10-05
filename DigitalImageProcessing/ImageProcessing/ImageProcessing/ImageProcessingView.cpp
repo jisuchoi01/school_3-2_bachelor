@@ -37,6 +37,8 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingView::OnHomework1)
 	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingView::OnGammaCorrection)
 	ON_COMMAND(ID_BINARIZATION, &CImageProcessingView::OnBinarization)
+	ON_COMMAND(ID_NEGA_TRANSFORM, &CImageProcessingView::OnNegaTransform)
+	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingView::OnStressTransform)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -251,7 +253,7 @@ void CImageProcessingView::OnGammaCorrection()
 	Invalidate(TRUE);
 }
 
-
+// 이진화
 void CImageProcessingView::OnBinarization()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -260,4 +262,26 @@ void CImageProcessingView::OnBinarization()
 
 	pDoc->OnBinarization();
 	Invalidate(TRUE);// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+// 반전 영상
+void CImageProcessingView::OnNegaTransform()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnNegaTransform();
+	Invalidate(TRUE);
+}
+
+// 부분 강조
+void CImageProcessingView::OnStressTransform()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnStressTransform();
+	Invalidate(TRUE);
 }

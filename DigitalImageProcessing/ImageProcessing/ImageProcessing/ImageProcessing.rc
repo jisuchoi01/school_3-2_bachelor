@@ -187,6 +187,8 @@ BEGIN
         MENUITEM "XOR, OR, NOR",                ID_LOGICAL_OPERATION
         MENUITEM "감마보정",                        ID_GAMMA_CORRECTION
         MENUITEM "이진화",                         ID_BINARIZATION
+        MENUITEM "반전",                          ID_NEGA_TRANSFORM
+        MENUITEM "부분강조",                        ID_STRESS_TRANSFORM
     END
     POPUP "과제"
     BEGIN
@@ -317,6 +319,18 @@ BEGIN
     CONTROL         "NOR",IDC_NOR,"Button",BS_AUTORADIOBUTTON | WS_GROUP,35,63,31,10
 END
 
+IDD_STRESS_TRANSFORM DIALOGEX 0, 0, 156, 78
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Range of Stress"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "확인",IDOK,14,50,50,14
+    PUSHBUTTON      "취소",IDCANCEL,79,50,50,14
+    EDITTEXT        IDC_EDIT1,17,19,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,82,19,40,14,ES_AUTOHSCROLL
+    LTEXT           "~",IDC_STATIC,67,22,8,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -430,6 +444,14 @@ BEGIN
         BOTTOMMARGIN, 117
         HORZGUIDE, 58
     END
+
+    IDD_STRESS_TRANSFORM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -460,6 +482,11 @@ BEGIN
 END
 
 IDD_LOGICAL_OPERATION AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_STRESS_TRANSFORM AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
