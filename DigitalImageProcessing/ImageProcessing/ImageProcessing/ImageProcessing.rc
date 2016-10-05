@@ -185,6 +185,8 @@ BEGIN
         MENUITEM "상수값 나눗셈",                     ID_DIV_AND_MULT
         MENUITEM "&& 연산",                       ID_AND_OPERATE
         MENUITEM "XOR, OR, NOR",                ID_LOGICAL_OPERATION
+        MENUITEM "감마보정",                        ID_GAMMA_CORRECTION
+        MENUITEM "이진화",                         ID_BINARIZATION
     END
     POPUP "과제"
     BEGIN

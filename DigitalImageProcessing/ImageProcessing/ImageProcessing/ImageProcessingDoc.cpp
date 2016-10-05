@@ -43,6 +43,8 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingDoc::OnDivAndMult)
 	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingDoc::OnLogicalOperation)
 	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingDoc::OnHomework1)
+	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingDoc::OnGammaCorrection)
+	ON_COMMAND(ID_BINARIZATION, &CImageProcessingDoc::OnBinarization)
 END_MESSAGE_MAP()
 
 
@@ -551,4 +553,39 @@ void CImageProcessingDoc::OnHomework1()
 	printf("원래 편차 : %lf\n", StandardDiviation);
 	printf("현재 편차 : %lf\n", AfterStandardDiviation);
 	printf("현재 평균 : %lf\n\n", AfterAverage);
+}
+
+
+void CImageProcessingDoc::OnGammaCorrection()
+{
+	CConstantDlg dlg;
+
+	double temp = 0;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_size];
+
+	if (dlg.DoModal() == IDOK)
+	{
+		for (int i = 0; i < m_size; i++)
+		{
+			temp = pow(m_InputImage[i], 1 / dlg.m_Constant);
+			// 감마 값 계산
+			if (temp < 0)
+				m_OutputImage[i] = 0;
+			else if (temp > 255)
+				m_OutputImage[i] = 255;
+			else
+				m_OutputImage[i] = (unsigned char)temp;
+		}
+	}
+}
+
+
+void CImageProcessingDoc::OnBinarization()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }

@@ -68,4 +68,6 @@ public:
 	afx_msg void OnDivAndMult();
 	afx_msg void OnLogicalOperation();
 	afx_msg void OnHomework1();
+	afx_msg void OnGammaCorrection();
+	afx_msg void OnBinarization();
 };

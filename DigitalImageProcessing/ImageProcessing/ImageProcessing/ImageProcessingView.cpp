@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_DIV_AND_MULT, &CImageProcessingView::OnDivAndMult)
 	ON_COMMAND(ID_LOGICAL_OPERATION, &CImageProcessingView::OnLogicalOperation)
 	ON_COMMAND(ID_HOMEWORK1, &CImageProcessingView::OnHomework1)
+	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingView::OnGammaCorrection)
+	ON_COMMAND(ID_BINARIZATION, &CImageProcessingView::OnBinarization)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -236,4 +238,26 @@ void CImageProcessingView::OnHomework1()
 
 	pDoc->OnHomework1();
 	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnGammaCorrection()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnGammaCorrection();
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnBinarization()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnBinarization();
+	Invalidate(TRUE);// TODO: 여기에 명령 처리기 코드를 추가합니다.
 }
