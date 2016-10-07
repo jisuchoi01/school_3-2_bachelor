@@ -54,6 +54,10 @@ public:
 	afx_msg void OnBinarization();
 	afx_msg void OnNegaTransform();
 	afx_msg void OnStressTransform();
+	afx_msg void OnHistogram();
+	afx_msg void OnDefaultStretching();
+	afx_msg void OnDrawHistogram();
+	afx_msg void OnEqualization();
 };
 
 #ifndef _DEBUG  // ImageProcessingView.cpp의 디버그 버전

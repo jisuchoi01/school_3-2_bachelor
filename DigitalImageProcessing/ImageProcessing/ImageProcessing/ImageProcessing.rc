@@ -189,6 +189,13 @@ BEGIN
         MENUITEM "이진화",                         ID_BINARIZATION
         MENUITEM "반전",                          ID_NEGA_TRANSFORM
         MENUITEM "부분강조",                        ID_STRESS_TRANSFORM
+        POPUP "히스토그램"
+        BEGIN
+            MENUITEM "기본 스트레칭",                     ID_DEFAULT_STRETCHING
+            MENUITEM "앤드 인 탐색",                     ID_32807
+            MENUITEM "평활화",                         ID_EQUALIZATION
+            MENUITEM "히스토그램 그리기",                   ID_DRAW_HISTOGRAM
+        END
     END
     POPUP "과제"
     BEGIN

@@ -20,6 +20,7 @@
 #include "LogicalOperationDlg.h"
 #include "StressTransformDlg.h"
 
+
 /* 그 외 유틸 */
 #include <string>
 using namespace std; // 표준이므로 std 안에 string 이 정의되어 있습니다. 
@@ -47,11 +48,17 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_BINARIZATION, &CImageProcessingDoc::OnBinarization)
 	ON_COMMAND(ID_NEGA_TRANSFORM, &CImageProcessingDoc::OnNegaTransform)
 	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingDoc::OnStressTransform)
+	ON_COMMAND(ID_DEFAULT_STRETCHING, &CImageProcessingDoc::OnDefaultStretching)
+	ON_COMMAND(ID_DRAW_HISTOGRAM, &CImageProcessingDoc::OnDrawHistogram)
+	ON_COMMAND(ID_EQUALIZATION, &CImageProcessingDoc::OnEqualization)
 END_MESSAGE_MAP()
 
+// 히스토그램 전역변수
+double m_HIST[256];
+double m_Sum_Of_HIST[256];
+unsigned char m_Scale_HIST[256];
 
 // CImageProcessingDoc 생성/소멸
-
 CImageProcessingDoc::CImageProcessingDoc()
 	: m_InputImage(NULL)
 	, m_width(0)
@@ -626,4 +633,156 @@ void CImageProcessingDoc::OnStressTransform()
 				m_OutputImage[i] = m_InputImage[i];
 		}
 	}
+}
+
+// 히스토그램 : 기본 스트레칭
+void CImageProcessingDoc::OnDefaultStretching()
+{
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	// 최소값, 최대값
+	unsigned char Min = m_InputImage[0];
+	unsigned char Max = m_InputImage[0];
+	
+	// 최소값 찾기
+	for (int i = 0; i < m_size; i++)
+	{
+		if (Min > m_InputImage[i])
+			Min = m_InputImage[i];
+	}
+
+	// 최대값 찾기
+	for (int i = 0; i < m_size; i++)
+	{
+		if (Max < m_InputImage[i])
+			Max = m_InputImage[i];
+	}
+
+	unsigned char diff = Max - Min;
+
+	for (int i = 0; i < m_size; i++)
+		m_OutputImage[i] = (m_InputImage[i] - Min) * 255 / diff;
+}
+
+
+// 히스토그램 그리기
+void CImageProcessingDoc::OnDrawHistogram()
+{
+	// 히스토그램의 값은 0~255
+	// 히스토그램의 크기 값을 MAX=255로 정규화하여 출력
+	// 히스트그램의 크기 : 256*256 지정
+
+	int i, j, value;
+	unsigned char LOW, HIGH;
+	double MAX, MIN, DIF;
+
+	m_Re_height = 256;
+	m_Re_width = 256;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	LOW = 0;
+	HIGH = 255;
+
+	// 초기화
+	for (i = 0; i<256; i++)
+		m_HIST[i] = LOW;
+
+	// 빈도 수 조사
+	for (i = 0; i<m_size; i++) {
+		value = (int)m_InputImage[i];
+		m_HIST[value]++;
+	}
+
+	// 정규화
+	MAX = m_HIST[0];
+	MIN = m_HIST[0];
+
+	for (i = 0; i<256; i++) {
+		if (m_HIST[i] > MAX)
+			MAX = m_HIST[i];
+	}
+
+	for (i = 0; i<256; i++) {
+		if (m_HIST[i] < MIN)
+			MIN = m_HIST[i];
+	}
+	DIF = MAX - MIN;
+
+	// 정규화된 히스토그램
+	for (i = 0; i<256; i++)
+		m_Scale_HIST[i] = (unsigned char)((m_HIST[i] - MIN) * HIGH / DIF);
+
+	// 정규화된 히스토그램 출력
+	m_OutputImage = new unsigned char[m_Re_size + (256 * 20)];
+
+	for (i = 0; i<m_Re_size; i++)
+		m_OutputImage[i] = 255;
+
+	// 정규화된 히스토그램의 값은 출력 배열에 검은 점(0)으로 표현
+	for (i = 0; i<256; i++) {
+		for (j = 0; j<m_Scale_HIST[i]; j++) {
+			m_OutputImage[m_Re_width*(m_Re_height - j - 1) + i] = 0;
+		}
+	}
+
+	// 히스토그램을 출력하고 그 아래 부분에 히스토그램의 색을 표시
+	for (i = m_Re_height; i<m_Re_height + 5; i++) {
+		for (j = 0; j<256; j++) {
+			m_OutputImage[m_Re_height * i + j] = 255;
+		}
+	}
+
+	for (i = m_Re_height + 5; i<m_Re_height + 20; i++) {
+		for (j = 0; j<256; j++) {
+			m_OutputImage[m_Re_height * i + j] = j;
+		}
+	}
+
+	m_Re_height = m_Re_height + 20;
+	m_Re_size = m_Re_height * m_Re_width;
+
+}
+
+// 평활화
+void CImageProcessingDoc::OnEqualization()
+{
+	int i, value;
+	unsigned char LOW, HIGH, Temp;
+	double SUM = 0.0;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	LOW = 0;
+	HIGH = 255;
+
+	// 초기화
+	for (i = 0; i<256; i++)
+		m_HIST[i] = LOW;
+
+	// 빈도 수 조사
+	for (i = 0; i<m_size; i++) {
+		value = (int)m_InputImage[i];
+		m_HIST[value]++;
+	}
+
+	// 누적 히스토그램 생성
+	for (i = 0; i<256; i++) {
+		SUM += m_HIST[i];
+		m_Sum_Of_HIST[i] = SUM;
+	}
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	// 입력 영상을 평활화된 영상으로 출력
+	for (i = 0; i<m_size; i++) {
+		Temp = m_InputImage[i];
+		m_OutputImage[i] = (unsigned char)(m_Sum_Of_HIST[Temp] * HIGH / m_size);
+	}
+
 }

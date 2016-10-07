@@ -53,13 +53,23 @@
 #define ID_NEGA_TRANSFORM               32801
 #define ID_32802                        32802
 #define ID_STRESS_TRANSFORM             32803
+#define ID_32804                        32804
+#define ID_HISTOGRAM                    32805
+#define ID_32806                        32806
+#define ID_32807                        32807
+#define ID_DEFAULT_STRETCHING           32808
+#define ID_32809                        32809
+#define ID_EQUI                         32810
+#define ID_32811                        32811
+#define ID_DRAW_HISTOGRAM               32812
+#define ID_EQUALIZATION                 32813
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        326
-#define _APS_NEXT_COMMAND_VALUE         32804
+#define _APS_NEXT_COMMAND_VALUE         32814
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

@@ -39,6 +39,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_BINARIZATION, &CImageProcessingView::OnBinarization)
 	ON_COMMAND(ID_NEGA_TRANSFORM, &CImageProcessingView::OnNegaTransform)
 	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingView::OnStressTransform)
+	ON_COMMAND(ID_DEFAULT_STRETCHING, &CImageProcessingView::OnDefaultStretching)
+	ON_COMMAND(ID_DRAW_HISTOGRAM, &CImageProcessingView::OnDrawHistogram)
+	ON_COMMAND(ID_EQUALIZATION, &CImageProcessingView::OnEqualization)
 END_MESSAGE_MAP()
 
 // CImageProcessingView »ý¼º/¼Ò¸ê
@@ -283,5 +286,39 @@ void CImageProcessingView::OnStressTransform()
 	ASSERT_VALID(pDoc);
 
 	pDoc->OnStressTransform();
+	Invalidate(TRUE);
+}
+
+
+
+void CImageProcessingView::OnDefaultStretching()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnDefaultStretching();
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnDrawHistogram()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnDrawHistogram();
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnEqualization()
+{
+	CImageProcessingDoc *pDoc = GetDocument();
+
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnEqualization();
 	Invalidate(TRUE);
 }
