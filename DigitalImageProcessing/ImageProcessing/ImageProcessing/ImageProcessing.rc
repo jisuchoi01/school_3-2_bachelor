@@ -195,6 +195,14 @@ BEGIN
             MENUITEM "앤드 인 탐색",                     ID_32807
             MENUITEM "평활화",                         ID_EQUALIZATION
             MENUITEM "히스토그램 그리기",                   ID_DRAW_HISTOGRAM
+            MENUITEM "히스토그램 Matching",              ID_32814
+        END
+        POPUP "화소영역처리"
+        BEGIN
+            MENUITEM "엠보싱",                         ID_EMBOSSING
+            MENUITEM "샤프닝",                         ID_SHARPENING
+            MENUITEM "블러링",                         ID_BLURRING
+            MENUITEM "경계선 검출",                      ID_32819
         END
     END
     POPUP "과제"

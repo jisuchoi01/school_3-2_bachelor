@@ -63,13 +63,23 @@
 #define ID_32811                        32811
 #define ID_DRAW_HISTOGRAM               32812
 #define ID_EQUALIZATION                 32813
+#define ID_32814                        32814
+#define ID_32815                        32815
+#define ID_32816                        32816
+#define ID_32817                        32817
+#define ID_32818                        32818
+#define ID_32819                        32819
+#define ID_EMBOSSING                    32820
+#define ID_BLU                          32821
+#define ID_BLURRING                     32822
+#define ID_SHARPENING                   32823
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        326
-#define _APS_NEXT_COMMAND_VALUE         32814
+#define _APS_NEXT_COMMAND_VALUE         32824
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

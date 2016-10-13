@@ -51,6 +51,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_DEFAULT_STRETCHING, &CImageProcessingDoc::OnDefaultStretching)
 	ON_COMMAND(ID_DRAW_HISTOGRAM, &CImageProcessingDoc::OnDrawHistogram)
 	ON_COMMAND(ID_EQUALIZATION, &CImageProcessingDoc::OnEqualization)
+	ON_COMMAND(ID_EMBOSSING, &CImageProcessingDoc::OnEmbossing)
+	ON_COMMAND(ID_BLURRING, &CImageProcessingDoc::OnBlurring)
+	ON_COMMAND(ID_SHARPENING, &CImageProcessingDoc::OnSharpening)
 END_MESSAGE_MAP()
 
 // 히스토그램 전역변수
@@ -68,6 +71,7 @@ CImageProcessingDoc::CImageProcessingDoc()
 	, m_Re_width(0)
 	, m_Re_height(0)
 	, m_Re_size(0)
+	, m_tempImage(NULL)
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
 
@@ -261,7 +265,78 @@ void CImageProcessingDoc::OnDownSampling(void)
 					= m_InputImage[(i*dlg.m_DownSampleRate*m_width) + dlg.m_DownSampleRate*j];
 				// 축소 영상을 생성
 			}
+		}// 히스토그램의 값은 0~255
+	// 히스토그램의 크기 값을 MAX=255로 정규화하여 출력
+	// 히스트그램의 크기 : 256*256 지정
+
+		int i, j, value;
+		unsigned char LOW, HIGH;
+		double MAX, MIN, DIF;
+
+		m_Re_height = 256;
+		m_Re_width = 256;
+		m_Re_size = m_Re_height * m_Re_width;
+
+		LOW = 0;
+		HIGH = 255;
+
+		// 초기화
+		for (i = 0; i < 256; i++)
+			m_HIST[i] = LOW;
+
+		// 빈도 수 조사
+		for (i = 0; i < m_size; i++)
+		{
+			value = (int)m_InputImage[i];
+			m_HIST[value]++;
 		}
+
+		// 정규화
+		MAX = m_HIST[0];
+		MIN = m_HIST[0];
+
+		// 최대값
+		for (i = 0; i < 256; i++)
+			if (m_HIST[i] > MAX)
+				MAX = m_HIST[i];
+
+		// 최고값
+		for (i = 0; i < 256; i++)
+			if (m_HIST[i] < MIN)
+				MIN = m_HIST[i];
+
+		// 정규화 계수
+		DIF = MAX - MIN;
+
+		// 정규화된 히스토그램
+		for (i = 0; i < 256; i++)
+			m_Scale_HIST[i] = (unsigned char)((m_HIST[i] - MIN) * HIGH / DIF);
+
+		// 정규화된 히스토그램 출력
+		m_OutputImage = new unsigned char[m_Re_size + (256 * 20)];
+
+		for (i = 0; i < m_Re_size; i++)
+			m_OutputImage[i] = 255;
+
+		// 정규화된 히스토그램의 값은 출력 배열에 검은 점(0)으로 표현
+		for (i = 0; i < 256; i++) {
+			for (j = 0; j < m_Scale_HIST[i]; j++) {
+				m_OutputImage[m_Re_width*(m_Re_height - j - 1) + i] = 0;
+			}
+		}
+
+		// 히스토그램을 출력
+		for (i = m_Re_height; i < m_Re_height + 5; i++)
+			for (j = 0; j < 256; j++)
+				m_OutputImage[m_Re_height * i + j] = 255;
+
+		// 그 아래 부분에 히스토그램의 색을 표시
+		for (i = m_Re_height + 5; i < m_Re_height + 20; i++)
+			for (j = 0; j < 256; j++)
+				m_OutputImage[m_Re_height * i + j] = j;
+
+		m_Re_height = m_Re_height + 20;
+		m_Re_size = m_Re_height * m_Re_width;
 	}
 }
 
@@ -535,12 +610,6 @@ void CImageProcessingDoc::OnHomework1()
 	// 변환된 영상의 평균과 편차 구함
 	AfterAverage = GetAverage(m_OutputImage, m_size);
 	AfterStandardDiviation = GetDiviation(m_OutputImage, m_size, AfterAverage);
-
-	// 디버깅 결과 출력
-	printf("원래 평균 : %lf\n", Average);
-	printf("원래 편차 : %lf\n", StandardDiviation);
-	printf("현재 편차 : %lf\n", AfterStandardDiviation);
-	printf("현재 평균 : %lf\n\n", AfterAverage);
 }
 
 
@@ -623,7 +692,7 @@ void CImageProcessingDoc::OnStressTransform()
 
 	m_OutputImage = new unsigned char[m_Re_size];
 
-	if (dlg.DoModal() == IDOK) 
+	if (dlg.DoModal() == IDOK)
 	{
 		for (int i = 0; i < m_size; i++)
 		{
@@ -647,7 +716,7 @@ void CImageProcessingDoc::OnDefaultStretching()
 	// 최소값, 최대값
 	unsigned char Min = m_InputImage[0];
 	unsigned char Max = m_InputImage[0];
-	
+
 	// 최소값 찾기
 	for (int i = 0; i < m_size; i++)
 	{
@@ -688,11 +757,12 @@ void CImageProcessingDoc::OnDrawHistogram()
 	HIGH = 255;
 
 	// 초기화
-	for (i = 0; i<256; i++)
+	for (i = 0; i < 256; i++)
 		m_HIST[i] = LOW;
 
 	// 빈도 수 조사
-	for (i = 0; i<m_size; i++) {
+	for (i = 0; i < m_size; i++)
+	{
 		value = (int)m_InputImage[i];
 		m_HIST[value]++;
 	}
@@ -701,50 +771,48 @@ void CImageProcessingDoc::OnDrawHistogram()
 	MAX = m_HIST[0];
 	MIN = m_HIST[0];
 
-	for (i = 0; i<256; i++) {
+	// 최대값
+	for (i = 0; i < 256; i++)
 		if (m_HIST[i] > MAX)
 			MAX = m_HIST[i];
-	}
 
-	for (i = 0; i<256; i++) {
+	// 최고값
+	for (i = 0; i < 256; i++)
 		if (m_HIST[i] < MIN)
 			MIN = m_HIST[i];
-	}
+
+	// 정규화 계수
 	DIF = MAX - MIN;
 
 	// 정규화된 히스토그램
-	for (i = 0; i<256; i++)
+	for (i = 0; i < 256; i++)
 		m_Scale_HIST[i] = (unsigned char)((m_HIST[i] - MIN) * HIGH / DIF);
 
 	// 정규화된 히스토그램 출력
 	m_OutputImage = new unsigned char[m_Re_size + (256 * 20)];
 
-	for (i = 0; i<m_Re_size; i++)
+	for (i = 0; i < m_Re_size; i++)
 		m_OutputImage[i] = 255;
 
 	// 정규화된 히스토그램의 값은 출력 배열에 검은 점(0)으로 표현
-	for (i = 0; i<256; i++) {
-		for (j = 0; j<m_Scale_HIST[i]; j++) {
+	for (i = 0; i < 256; i++) {
+		for (j = 0; j < m_Scale_HIST[i]; j++) {
 			m_OutputImage[m_Re_width*(m_Re_height - j - 1) + i] = 0;
 		}
 	}
 
-	// 히스토그램을 출력하고 그 아래 부분에 히스토그램의 색을 표시
-	for (i = m_Re_height; i<m_Re_height + 5; i++) {
-		for (j = 0; j<256; j++) {
+	// 히스토그램을 출력
+	for (i = m_Re_height; i < m_Re_height + 5; i++)
+		for (j = 0; j < 256; j++)
 			m_OutputImage[m_Re_height * i + j] = 255;
-		}
-	}
 
-	for (i = m_Re_height + 5; i<m_Re_height + 20; i++) {
-		for (j = 0; j<256; j++) {
+	// 그 아래 부분에 히스토그램의 색을 표시
+	for (i = m_Re_height + 5; i < m_Re_height + 20; i++)
+		for (j = 0; j < 256; j++)
 			m_OutputImage[m_Re_height * i + j] = j;
-		}
-	}
 
 	m_Re_height = m_Re_height + 20;
 	m_Re_size = m_Re_height * m_Re_width;
-
 }
 
 // 평활화
@@ -762,17 +830,19 @@ void CImageProcessingDoc::OnEqualization()
 	HIGH = 255;
 
 	// 초기화
-	for (i = 0; i<256; i++)
+	for (i = 0; i < 256; i++)
 		m_HIST[i] = LOW;
 
 	// 빈도 수 조사
-	for (i = 0; i<m_size; i++) {
+	for (i = 0; i < m_size; i++)
+	{
 		value = (int)m_InputImage[i];
 		m_HIST[value]++;
 	}
 
 	// 누적 히스토그램 생성
-	for (i = 0; i<256; i++) {
+	for (i = 0; i < 256; i++)
+	{
 		SUM += m_HIST[i];
 		m_Sum_Of_HIST[i] = SUM;
 	}
@@ -780,9 +850,212 @@ void CImageProcessingDoc::OnEqualization()
 	m_OutputImage = new unsigned char[m_Re_size];
 
 	// 입력 영상을 평활화된 영상으로 출력
-	for (i = 0; i<m_size; i++) {
+	for (i = 0; i < m_size; i++)
+	{
 		Temp = m_InputImage[i];
 		m_OutputImage[i] = (unsigned char)(m_Sum_Of_HIST[Temp] * HIGH / m_size);
 	}
+}
 
+double** CImageProcessingDoc::OnMaskProcess(unsigned char *Target, double Mask[3][3])
+{
+	// 회선 처리가 일어나는 함수
+	int i, j, n, m;
+	double **tempInputImage, **tempOutputImage, S = 0.0;
+
+	tempInputImage = Image2DMem(m_height + 2, m_width + 2);
+	// 입력 값을 위한 메모리 할당
+	tempOutputImage = Image2DMem(m_height, m_width);
+	// 출력 값을 위한 메모리 할당
+
+	// 1차원 입력 영상의 값을 2차원 배열에 할당한다.
+	for (i = 0; i < m_height; i++) {
+		for (j = 0; j < m_width; j++) {
+			tempInputImage[i + 1][j + 1]
+				= (double)Target[i * m_width + j];
+		}
+	}
+
+	// 회선연산
+	for (i = 0; i < m_height; i++) {
+		for (j = 0; j < m_width; j++) {
+			for (n = 0; n < 3; n++) {
+				for (m = 0; m < 3; m++) {
+					S += Mask[n][m] * tempInputImage[i + n][j + m];
+				}
+			} // 회선 마스크의 크기 만큼 이동하면서 값을 누적
+			tempOutputImage[i][j] = S; // 누적된 값을 출력 메모리에 저장
+			S = 0.0; // 다음 블록으로 이동하면 누적 값을 초기화
+		}
+	}
+	return tempOutputImage; // 결과 값 반환
+}
+
+
+double** CImageProcessingDoc::OnScale(double **Target, int height, int width)
+{
+	// 정규화를 위한 함수
+	int i, j;
+	double min, max;
+
+	min = max = Target[0][0];
+
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			if (Target[i][j] <= min)
+				min = Target[i][j];
+		}
+	}
+
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			if (Target[i][j] >= max)
+				max = Target[i][j];
+		}
+	}
+
+	max = max - min;
+
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			Target[i][j] = (Target[i][j] - min) * (255. / max);
+		}
+	}
+
+	return Target;
+}
+
+
+// 이차원 배열 초기화
+double** CImageProcessingDoc::Image2DMem(int height, int width)
+{
+	double** temp = NULL;
+	int i = 0, j = 0;
+
+	// 메모리 할당
+	temp = new double *[height];
+	for (i = 0; i < height; i++) 
+	{
+		temp[i] = new double[width];
+	}
+
+	// 할당된 2차원 메모리를 초기화
+	for (i = 0; i < height; i++) 
+		for (j = 0; j < width; j++) 
+			temp[i][j] = 0.0;
+	
+	// 할당 및 초기화 된 메모리 반환
+	return temp;
+}
+
+// 엠보싱
+void CImageProcessingDoc::OnEmbossing()
+{
+	int i, j;
+	double EmboMask[3][3] = { { -1., 0., 0. },{ 0., 0., 0. },{ 0., 0., 1. } };
+	// 마스크 선택
+	// double EmboMask[3][3] = {{0., 0., 0.}, {0., 1., 0.}, {0., 0., 0.}};
+	// double EmboMask[3][3] = {{1., 1., 1.}, {1., -8.,1.}, {1., 1., 1.}};
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, EmboMask);
+
+	// OnMaskProcess 함수를 호출하여 회선 처리를 한다.
+	for (i = 0; i < m_Re_height; i++)
+	{
+		for (j = 0; j < m_Re_width; j++)
+		{
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	// 회선 처리 결과가 0~255 사이 값이 되도록 한다.
+	  // m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	  // 정규화 함수를 사용할 때
+
+	  // 회선 처리 결과나 정규화 처리 결과는 2차원 배열 값이 되므로
+	  // 2차원 배열을 1차원 배열로 바꾸어 출력하도록 한다.
+	for (i = 0; i < m_Re_height; i++)
+	{
+		for (j = 0; j < m_Re_width; j++)
+		{
+			m_OutputImage[i*m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+// 블러링
+// 합을 1로 만든다는 건, 평균을 변화시키지 않겠다라는 소리
+void CImageProcessingDoc::OnBlurring()
+{
+	int i, j;
+	double BlurrMask[3][3] = { { 1. / 9., 1. / 9., 1. / 9. }, { 1. / 9., 1. / 9., 1. / 9. },{ 1. / 9., 1. / 9., 1. / 9. } };
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	m_tempImage = OnMaskProcess(m_InputImage, BlurrMask);
+	// 블러링 처리
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+
+	// 정규화
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i*m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+// 샤프닝
+void CImageProcessingDoc::OnSharpening()
+{
+	int i = 0, j = 0;
+	double SharpeningMask[3][3] = {{-1., -1., -1.}, {-1., 8., -1.}, { -1., -1., -1. }};
+	// double SharpeningMask[3][3] = { { 0., -1., 0. },{ -1., 5.,-1. },{ 0., -1., 0. } };
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+
+	m_tempImage = OnMaskProcess(m_InputImage, SharpeningMask);
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+
+	for (i = 0; i < m_Re_height; i++) 
+	{
+		for (j = 0; j < m_Re_width; j++) 
+		{
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i*m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
 }

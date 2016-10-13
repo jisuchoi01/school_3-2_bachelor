@@ -42,6 +42,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_DEFAULT_STRETCHING, &CImageProcessingView::OnDefaultStretching)
 	ON_COMMAND(ID_DRAW_HISTOGRAM, &CImageProcessingView::OnDrawHistogram)
 	ON_COMMAND(ID_EQUALIZATION, &CImageProcessingView::OnEqualization)
+	ON_COMMAND(ID_EMBOSSING, &CImageProcessingView::OnEmbossing)
+	ON_COMMAND(ID_BLURRING, &CImageProcessingView::OnBlurring)
+	ON_COMMAND(ID_SHARPENING, &CImageProcessingView::OnSharpening)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -65,18 +68,19 @@ BOOL CImageProcessingView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 // CImageProcessingView 그리기
-
 void CImageProcessingView::OnDraw(CDC* pDC)
 {
 	CImageProcessingDoc* pDoc = GetDocument(); // Doc 클래스 참조
 	ASSERT_VALID(pDoc);
-	// TODO: add draw code for native data here
-
-	int i, j;
+	
+	int i, j, value;
 	unsigned char R, G, B;
-	// 입력 영상 출력
-	for (i = 0; i < pDoc->m_height; i++) {
-		for (j = 0; j < pDoc->m_width; j++) {
+	
+    // 입력 영상 출력
+	for (i = 0; i < pDoc->m_height; i++) 
+	{
+		for (j = 0; j < pDoc->m_width; j++) 
+		{
 			R = pDoc->m_InputImage[i*pDoc->m_width + j];
 			G = B = R;
 			pDC->SetPixel(j + 5, i + 5, RGB(R, G, B));
@@ -84,11 +88,99 @@ void CImageProcessingView::OnDraw(CDC* pDC)
 	}
 
 	// 축소된 영상 출력
-	for (i = 0; i < pDoc->m_Re_height; i++) {
-		for (j = 0; j < pDoc->m_Re_width; j++) {
+	for (i = 0; i < pDoc->m_Re_height; i++) 
+	{
+		for (j = 0; j < pDoc->m_Re_width; j++) 
+		{
 			R = pDoc->m_OutputImage[i*pDoc->m_Re_width + j];
 			G = B = R;
 			pDC->SetPixel(j + pDoc->m_width + 10, i + 5, RGB(R, G, B));
+		}
+	}
+
+	// 히스토그램의 값은 0~255
+	// 히스토그램의 크기 값을 MAX=255로 정규화하여 출력
+	// 히스트그램의 크기 : 256*256 지정
+	unsigned char LOW, HIGH;
+	double MAX, MIN, DIF;
+	
+	double m_HIST[256];
+	double m_Sum_Of_HIST[256];
+	unsigned char m_Scale_HIST[256];
+	
+	pDoc->m_Re_height = 256;
+	pDoc->m_Re_width = 256;
+	pDoc->m_Re_size = pDoc->m_Re_height * pDoc->m_Re_width;
+
+	LOW = 0;
+	HIGH = 255;
+
+	// 초기화
+	for (i = 0; i < 256; i++)
+		m_HIST[i] = LOW;
+
+	// 빈도 수 조사
+	for (i = 0; i < pDoc->m_size; i++)
+	{
+		value = (int) pDoc->m_InputImage[i];
+		m_HIST[value]++;
+	}
+
+	// 정규화
+	MAX = m_HIST[0];
+	MIN = m_HIST[0];
+
+	// 최대값
+	for (i = 0; i<256; i++)
+		if (m_HIST[i] > MAX)
+			MAX = m_HIST[i];
+
+	// 최고값
+	for (i = 0; i<256; i++)
+		if (m_HIST[i] < MIN)
+			MIN = m_HIST[i];
+
+	// 정규화 계수
+	DIF = MAX - MIN;
+
+	// 정규화된 히스토그램
+	for (i = 0; i < 256; i++)
+		m_Scale_HIST[i] = (unsigned char)((m_HIST[i] - MIN) * HIGH / DIF);
+
+	// 정규화된 히스토그램 출력
+	unsigned char* Histogram = new unsigned char[pDoc->m_Re_size + (256 * 20)];
+
+	for (i = 0; i < pDoc->m_Re_size; i++)
+		Histogram[i] = 255;
+
+	// 정규화된 히스토그램의 값은 출력 배열에 검은 점(0)으로 표현
+	for (i = 0; i<256; i++) {
+		for (j = 0; j<m_Scale_HIST[i]; j++) {
+			Histogram[pDoc->m_Re_width*(pDoc->m_Re_height - j - 1) + i] = 0;
+		}
+	}
+
+	// 히스토그램을 출력
+	for (i = pDoc->m_Re_height; i < pDoc->m_Re_height + 5; i++)
+		for (j = 0; j < 256; j++)
+			Histogram[pDoc->m_Re_height * i + j] = 255;
+
+	// 그 아래 부분에 히스토그램의 색을 표시
+	for (i = pDoc->m_Re_height + 5; i < pDoc->m_Re_height + 20; i++)
+		for (j = 0; j<256; j++)
+			Histogram[pDoc->m_Re_height * i + j] = j;
+
+	pDoc->m_Re_height = pDoc->m_Re_height + 20;
+	pDoc->m_Re_size = pDoc->m_Re_height * pDoc->m_Re_width;
+
+	// 축소된 영상 출력
+	for (i = 0; i < pDoc->m_Re_height; i++)
+	{
+		for (j = 0; j < pDoc->m_Re_width; j++)
+		{
+			R = Histogram[i*pDoc->m_Re_width + j];
+			G = B = R;
+			pDC->SetPixel(j + pDoc->m_width + pDoc->m_Re_width+ 15, i + 5, RGB(R, G, B));
 		}
 	}
 }
@@ -222,8 +314,6 @@ void CImageProcessingView::OnAndOperate()
 	Invalidate(TRUE);
 }
 
-
-
 void CImageProcessingView::OnLogicalOperation()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -234,7 +324,7 @@ void CImageProcessingView::OnLogicalOperation()
 	Invalidate(TRUE);
 }
 
-
+// 과제
 void CImageProcessingView::OnHomework1()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -301,7 +391,7 @@ void CImageProcessingView::OnDefaultStretching()
 	Invalidate(TRUE);
 }
 
-
+// 히스토그램 그리기
 void CImageProcessingView::OnDrawHistogram()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -312,7 +402,7 @@ void CImageProcessingView::OnDrawHistogram()
 	Invalidate(TRUE);
 }
 
-
+// 평활화
 void CImageProcessingView::OnEqualization()
 {
 	CImageProcessingDoc *pDoc = GetDocument();
@@ -320,5 +410,39 @@ void CImageProcessingView::OnEqualization()
 	ASSERT_VALID(pDoc);
 
 	pDoc->OnEqualization();
+	Invalidate(TRUE);
+}
+
+// 엠보싱
+void CImageProcessingView::OnEmbossing()
+{
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnEmbossing();
+
+	Invalidate(TRUE);
+
+}
+
+// 블러링
+void CImageProcessingView::OnBlurring()
+{
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnBlurring();
+
+	Invalidate(TRUE);
+}
+
+// 샤프닝
+void CImageProcessingView::OnSharpening()
+{
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnSharpening();
+
 	Invalidate(TRUE);
 }

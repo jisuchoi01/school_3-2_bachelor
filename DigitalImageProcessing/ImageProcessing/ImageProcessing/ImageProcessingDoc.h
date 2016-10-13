@@ -56,6 +56,7 @@ public:
 	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
 	
 	unsigned char*m_OutputImage;
+	unsigned char* m_HistogramImage;
 	int m_Re_width;
 	int m_Re_height;
 	int m_Re_size;
@@ -72,8 +73,14 @@ public:
 	afx_msg void OnBinarization();
 	afx_msg void OnNegaTransform();
 	afx_msg void OnStressTransform();
-	afx_msg void OnHistogram();
 	afx_msg void OnDefaultStretching();
 	afx_msg void OnDrawHistogram();
 	afx_msg void OnEqualization();
+	afx_msg void OnEmbossing();
+	double** OnMaskProcess(unsigned char *Target, double Mask[3][3]);
+	double** OnScale(double **Target, int height, int width);
+	double** Image2DMem(int height, int width);
+	double** m_tempImage;
+	afx_msg void OnBlurring();
+	afx_msg void OnSharpening();
 };
