@@ -60,6 +60,7 @@ public:
 	afx_msg void OnEmbossing();
 	afx_msg void OnBlurring();
 	afx_msg void OnSharpening();
+	afx_msg void OnHomework2();
 };
 
 #ifndef _DEBUG  // ImageProcessingView.cpp의 디버그 버전

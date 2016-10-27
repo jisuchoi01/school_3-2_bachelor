@@ -83,4 +83,5 @@ public:
 	double** m_tempImage;
 	afx_msg void OnBlurring();
 	afx_msg void OnSharpening();
+	afx_msg void OnHomework2();
 };

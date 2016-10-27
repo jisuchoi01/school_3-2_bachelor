@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_EMBOSSING, &CImageProcessingView::OnEmbossing)
 	ON_COMMAND(ID_BLURRING, &CImageProcessingView::OnBlurring)
 	ON_COMMAND(ID_SHARPENING, &CImageProcessingView::OnSharpening)
+	ON_COMMAND(ID_HOMEWORK2, &CImageProcessingView::OnHomework2)
 END_MESSAGE_MAP()
 
 // CImageProcessingView »ý¼º/¼Ò¸ê
@@ -180,7 +181,7 @@ void CImageProcessingView::OnDraw(CDC* pDC)
 		{
 			R = Histogram[i*pDoc->m_Re_width + j];
 			G = B = R;
-			pDC->SetPixel(j + pDoc->m_width + pDoc->m_Re_width+ 15, i + 5, RGB(R, G, B));
+			pDC->SetPixel(j + (2 * pDoc->m_width), i + 5, RGB(R, G, B));
 		}
 	}
 }
@@ -443,6 +444,17 @@ void CImageProcessingView::OnSharpening()
 	ASSERT_VALID(pDoc);
 
 	pDoc->OnSharpening();
+
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnHomework2()
+{
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+
+	pDoc->OnHomework2();
 
 	Invalidate(TRUE);
 }

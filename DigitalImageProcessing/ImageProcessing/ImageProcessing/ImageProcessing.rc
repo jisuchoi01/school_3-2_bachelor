@@ -208,6 +208,7 @@ BEGIN
     POPUP "과제"
     BEGIN
         MENUITEM "과제1",                         ID_HOMEWORK1
+        MENUITEM "과제2",                         ID_HOMEWORK2
     END
 END
 

@@ -54,6 +54,7 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_EMBOSSING, &CImageProcessingDoc::OnEmbossing)
 	ON_COMMAND(ID_BLURRING, &CImageProcessingDoc::OnBlurring)
 	ON_COMMAND(ID_SHARPENING, &CImageProcessingDoc::OnSharpening)
+	ON_COMMAND(ID_HOMEWORK2, &CImageProcessingDoc::OnHomework2)
 END_MESSAGE_MAP()
 
 // 히스토그램 전역변수
@@ -1056,6 +1057,66 @@ void CImageProcessingDoc::OnSharpening()
 		for (j = 0; j < m_Re_width; j++) {
 			m_OutputImage[i*m_Re_width + j]
 				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+// 메디안 필터링 과제
+// 퀵소트
+void quickSort(unsigned char arr[], int left, int right) 
+{
+	unsigned char i = left, j = right;
+	unsigned char tmp;
+	unsigned char pivot = arr[(left + right) / 2];
+
+	/* partition */
+	while (i <= j) 
+	{
+		while (arr[i] < pivot)
+			i++;
+		while (arr[j] > pivot)
+			j--;
+
+		if (i <= j) {
+			tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+			i++;
+			j--;
+		}
+	};
+
+	/* recursion */
+	if (left < j)
+		quickSort(arr, left, j);
+
+	if (i < right)
+		quickSort(arr, i, right);
+}
+
+void CImageProcessingDoc::OnHomework2()
+{
+	int i = 0, j = 0;
+	int tmp = 0;
+
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+
+	m_OutputImage = new unsigned char[m_Re_size];
+	unsigned char* NearPixel = new unsigned char[9];
+
+	for (i = 1; i < m_Re_height; i++)
+	{
+		for (j = 1; j < m_Re_width; j++)
+		{
+			int index = (m_Re_width * i) + j - 1;
+			for (tmp = 0; tmp < 9; tmp++, index++) 
+				NearPixel[tmp] = m_InputImage[index];
+
+			quickSort(NearPixel,0,8);
+
+			m_OutputImage[i*m_Re_width + j] = NearPixel[4];
 		}
 	}
 }
