@@ -448,7 +448,7 @@ void CImageProcessingView::OnSharpening()
 	Invalidate(TRUE);
 }
 
-
+// 과제 2 : 메디안 필터 구현
 void CImageProcessingView::OnHomework2()
 {
 	CImageProcessingDoc* pDoc = GetDocument();

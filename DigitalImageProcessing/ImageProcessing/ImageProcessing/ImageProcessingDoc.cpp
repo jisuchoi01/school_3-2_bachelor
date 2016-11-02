@@ -1077,7 +1077,8 @@ void quickSort(unsigned char arr[], int left, int right)
 		while (arr[j] > pivot)
 			j--;
 
-		if (i <= j) {
+		if (i <= j) 
+		{
 			tmp = arr[i];
 			arr[i] = arr[j];
 			arr[j] = tmp;
@@ -1094,28 +1095,46 @@ void quickSort(unsigned char arr[], int left, int right)
 		quickSort(arr, i, right);
 }
 
+// 메디안 필터
 void CImageProcessingDoc::OnHomework2()
 {
 	int i = 0, j = 0;
-	int tmp = 0;
-
+	
+	// InputImage에서 바꾸고자 하는 픽셀을 중심으로 3*3  정사각형 이미지의
+	// 행과 열을 접근하기 위한 변수
+	int r = 0, c = 0;
+	
 	m_Re_height = m_height;
 	m_Re_width = m_width;
 	m_Re_size = m_Re_height * m_Re_width;
 
 	m_OutputImage = new unsigned char[m_Re_size];
+	
+	// 3*3 인접화소를 담아둘 배열 
 	unsigned char* NearPixel = new unsigned char[9];
 
-	for (i = 1; i < m_Re_height; i++)
+	// NearPixel의 인덱스 변수
+	int tmp = 0;
+
+	// 모든 화소를
+	for (i = 1; i < m_Re_width; i++)
 	{
-		for (j = 1; j < m_Re_width; j++)
+		for (j = 1; j < m_Re_height; j++)
 		{
-			int index = (m_Re_width * i) + j - 1;
-			for (tmp = 0; tmp < 9; tmp++, index++) 
-				NearPixel[tmp] = m_InputImage[index];
+			tmp = 0; // tmp 초기화
+			// 바꾸고자 하는 픽셀을 중심으로 3*3 이미지 화소값을 
+			for (int r = 0; r < 3; r++)
+			{
+				int index = (m_Re_width * (i + r - 1)) + j - 1; // 3*3 이미지의 좌상단 인덱스부터
 
+				for (int c = 0; c < 3 && tmp < 9; c++, tmp++) // 1, 2, 3 순으로 행(r)이 바뀌면 4, 5, 6으로
+					NearPixel[tmp] = m_InputImage[index + c]; // NearPixel에 저장한다
+			}
+			
+			// 퀵소트해서 정렬한 뒤
 			quickSort(NearPixel,0,8);
-
+			
+			// 정렬된 화소의 중앙값으로 화소 대체
 			m_OutputImage[i*m_Re_width + j] = NearPixel[4];
 		}
 	}
